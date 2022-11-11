@@ -1,0 +1,18 @@
+#!/bin/bash
+
+args=("$@")
+
+script_full_path=$(dirname $(readlink -f "$0"))
+
+node /var/task/wrapper-script.js
+
+wrapper_script_result=$?
+
+if [ $wrapper_script_result -ne 0 ]; then
+    echo "Error: 'wrapper_script_result' script returned with non-zero status code: $wrapper_script_result"
+    exit $wrapper_script_result
+fi
+
+export DATABASE_URL=`cat /tmp/dburl`
+
+exec "${args[@]}"
